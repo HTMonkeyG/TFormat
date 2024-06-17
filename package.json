@@ -1,10 +1,10 @@
 {
   "name": "tformat",
-  "version": "1.0.0",
+  "version": "3.2.0",
   "description": "A minecraft format code interpreter for terminal",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node ./test.js"
   },
   "keywords": [
     "minecraft",

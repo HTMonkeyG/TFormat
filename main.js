@@ -43,22 +43,24 @@ function rgb(r, g, b) { return `\x1b[38;2;${r};${g};${b};m` }
 function mcFmtLog(text) { var res = mcFmtCode(text); console.log(res); return res }
 
 /**
- * Print text with format code and replacement
+ * Shortcut for using translateF() first and then call console.log()
  * @param {String} text - Input
  * @param {String[]} replace - Replacement array
  * @returns {String} Result
  */
-function printF(txt, replace) {
-  var ret = '';
-  if (txt == void 0 || !txt.length) return '';
-  for (var i = 0; i < txt.length; i++) {
-    if (txt[i] == '%')
-      (txt[i + 1] != void 0 && /[0-9]+/.test(txt[i + 1])) ? (ret += (replace[txt[i + 1]].toString() || ''), i++) : ret += '%';
-    else
-      ret += txt[i]
-  }
-  ret = mcFmtCode(ret);
-  console.log(ret);
+function printF(text, replace) {
+  console.log(translateF(text, replace));
+  return ret
+}
+
+/**
+ * printF() with process.stdout.write() instead
+ * @param {String} text - Input
+ * @param {String[]} replace - Replacement array
+ * @returns {String} Result
+ */
+function stdoutF(text, replace) {
+  process.stdout.write('' + translateF(text, replace));
   return ret
 }
 
@@ -80,50 +82,36 @@ function translateF(txt, replace) {
   return mcFmtCode(ret);
 }
 
-/**
- * Convert a hex number to a buffer
- * @param {String} text - Input
- * @returns {Buffer} Result
- */
-function hex2buf(text) {
-  if (typeof (text) !== 'string')
+function hex2buf(txt) {
+  if (typeof (txt) !== 'string')
     return !1;
-  text = text.replace(/^(0x|0X)/, '');
-  (text.length & 1) && (text = '0' + text);
-  var ret = Buffer.from(text, 'hex');
+  txt = txt.replace(/^(0x|0X)/, '');
+  (txt.length & 1) && (txt = '0' + txt);
+  var ret = Buffer.from(txt, 'hex');
   if (!ret.length) return !1;
-  if (ret.length != (text.length >> 1))
+  if (ret.length != (txt.length >> 1))
     return !1;
   return ret
 }
 
-/**
- * Format text with MCBE format code
- * @param {String} text - Input
- * @returns {String} Result
- */
-function mcFmtCode(text) {
+function mcFmtCode(txt) {
   function code2console(a) {
     var table = { '0': '\x1b[30m', '1': '\x1b[34m', '2': '\x1b[32m', '3': '\x1b[36m', '4': '\x1b[31m', '5': '\x1b[35m', '6': '\x1b[33m', '7': '\x1b[37m', '8': '\x1b[90m', '9': '\x1b[94m', 'a': '\x1b[92m', 'b': '\x1b[96m', 'c': '\x1b[91m', 'd': '\x1b[95m', 'e': '\x1b[93m', 'f': '\x1b[97m', 'g': '\x1b[38;2;221;214;5;m', 'l': '\x1b[1m', 'r': '\x1b[0m' };
     return table[a] || ''
   }
   var ret = '';
-  if (!text.length) return '';
-  for (var i = 0; i < text.length; i++) {
-    if (text[i] == '§')
-      (text[i + 1] == void 0) ? ret += '§' : (ret += code2console(text[i + 1]), i++);
+  if (!txt.length) return '';
+  for (var i = 0; i < txt.length; i++) {
+    if (txt[i] == '§')
+      (txt[i + 1] == void 0) ? ret += '§' : (ret += code2console(txt[i + 1]), i++);
     else
-      ret += text[i]
+      ret += txt[i]
   }
   return ret
 }
 
-/**
- * Format a date object to YYYYMMDDhhmmss
- * @param {Date} date - Input
- */
 function fmtDate(date) {
-  date = new Date(date);
+  var d = new Date(date);
   var Y = date.getFullYear();
   var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1);
   var D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate());
@@ -149,7 +137,7 @@ function limPrgBar(title, percent, length) {
   if (title.length > length)
     txt = '…' + title.slice(-length + 1)
   else
-    txt += title;
+    txt = title;
   printF(txt);
   txt = '§9[§b';
   for (a = 0; a < (length - 10); a++) {
@@ -163,6 +151,7 @@ function limPrgBar(title, percent, length) {
 exports.rgb = rgb,
   exports.fmtDate = fmtDate,
   exports.printF = printF,
+  exports.stdoutF = stdoutF,
   exports.translateF = translateF,
   exports.mcFmtCode = mcFmtCode,
   exports.mcFmtLog = mcFmtLog,
