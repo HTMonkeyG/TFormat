@@ -1,5 +1,5 @@
 {
-  "name": "tformat",
+  "name": "tformat-js",
   "version": "1.0.0",
   "description": "A minecraft format code interpreter for terminal",
   "main": "main.js",
