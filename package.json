@@ -1,5 +1,5 @@
 {
-  "name": "tformat-js",
+  "name": "@htmonkeyg/tformat",
   "version": "1.0.0",
   "description": "A minecraft format code interpreter for terminal",
   "main": "main.js",
@@ -12,5 +12,13 @@
     "formatter"
   ],
   "author": "HTMonkeyG",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HTMonkeyG/TFormat.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HTMonkeyG/TFormat/issues"
+  },
+  "homepage": "https://github.com/HTMonkeyG/TFormat#readme"
 }
