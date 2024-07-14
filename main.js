@@ -22,7 +22,7 @@
   SOFTWARE.
 */
 
-const proc = require('process')
+const ps = require('process')
   , rl = require('readline');
 
 /**
@@ -131,11 +131,11 @@ function fmtDate(date) {
  */
 function limPrgBar(title, percent, length) {
   var txt = '', a;
-  typeof (length) == 'number' ? (length > proc.stdout.columns && (length = proc.stdout.columns)) : (length = proc.stdout.columns);
+  typeof (length) == 'number' ? (length > ps.stdout.columns && (length = ps.stdout.columns)) : (length = ps.stdout.columns);
   typeof (percent) != 'number' && (percent = 0);
   percent > 1 && (percent = 1);
-  rl.moveCursor(proc.stdout, 0, -2);
-  rl.clearLine(proc.stdout)
+  rl.moveCursor(ps.stdout, 0, -2);
+  rl.clearLine(ps.stdout)
   if (title.length > length)
     txt = '…' + title.slice(-length + 1)
   else
@@ -150,6 +150,22 @@ function limPrgBar(title, percent, length) {
   printF(txt)
 }
 
+function getCursorPos() {
+  return new Promise((resolve) => {
+    process.stdin.setEncoding('utf8');
+    var raw = process.stdin.isRaw;
+    process.stdin.setRawMode(true);
+
+    process.stdin.once('readable', () => {
+      var str = process.stdin.read().toString();  // "\u001b[ <r> ; <c> R"
+      var pos = /\[(.*)/g.exec(str)[0].replace(/\[|R/g, '').split(';');
+      process.stdin.setRawMode(raw);
+      resolve({ rows: Number(pos[0]), cols: Number(pos[1]) });
+    });
+    process.stdout.write('\u001b[6n');
+  })
+}
+
 exports.rgb = rgb;
 exports.fmtDate = fmtDate;
 exports.printF = printF;
@@ -159,3 +175,4 @@ exports.mcFmtCode = mcFmtCode;
 exports.mcFmtLog = mcFmtLog;
 exports.hex2buf = hex2buf;
 exports.limPrgBar = limPrgBar;
+exports.getCursorPos = getCursorPos;

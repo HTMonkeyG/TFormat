@@ -1,6 +1,6 @@
 {
   "name": "@htmonkeyg/tformat",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A minecraft format code interpreter for terminal",
   "main": "main.js",
   "scripts": {
